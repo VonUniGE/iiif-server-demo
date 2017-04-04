@@ -23,6 +23,21 @@
     <script th:src="@{/webjars/mirador/2.3.0/mirador.min.js}"></script>
     <script type="text/javascript" th:inline="javascript">
       $(function(){
+        // <![CDATA[
+        // Hotfix for ProjectMirador/mirador #1367
+        Mirador.MetadataView.prototype.getWithin = function(within) {
+          if (typeof within === 'object' && within['@type'] === 'sc:Collection') {
+            var collectionUrl = within['@id'];
+            var collectionLabel = within.label || collectionUrl;
+            return '<a href="' + collectionUrl + '" target="_blank">' + collectionLabel + '</a>';
+          } else if (within instanceof Array) {
+            return within.map(this.getWithin, this).join("<br/>");
+          } else {
+            return this.stringifyObject(within);
+          }
+        };
+        // ]]>
+
         Mirador({
           'id': 'viewer',
           'buildPath': /*[[@{/webjars/mirador/2.3.0/}]]*/,
